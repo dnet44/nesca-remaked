@@ -1,5 +1,5 @@
 #include "IPRandomizer.h"
-
+#include <random>
 
 IPRandomizer::IPRandomizer(std::vector<IPRangeHolder> ipRangeVec, int shuffleGap)
 {
@@ -34,7 +34,9 @@ void IPRandomizer::shuffleRange() {
 
 		this->shuffleOffset[i] += offset;
 	}
-	std::random_shuffle(this->shuffledRange.begin(), this->shuffledRange.end());
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(this->shuffledRange.begin(), this->shuffledRange.end(), g);
 }
 
 unsigned int IPRandomizer::getNext() {
@@ -47,7 +49,7 @@ unsigned int IPRandomizer::getNext() {
 		};
 	};
 
-	unsigned int ip = this->shuffledRange[0];
-	this->shuffledRange.erase(this->shuffledRange.begin());
+	unsigned int ip = this->shuffledRange.back();
+	this->shuffledRange.pop_back();
 	return ip;
 }

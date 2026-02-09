@@ -6,7 +6,7 @@ TEMPLATE = app
 TARGET = nesca_3
 DESTDIR = ../Win32/Debug
 QT += core multimedia widgets gui qml
-CONFIG += debug
+CONFIG += debug c++17
 DEFINES += QT_DLL QT_WIDGETS_LIB QT_QML_LIB
 INCLUDEPATH += ./GeneratedFiles \
     $(QTDIR)/bin \
