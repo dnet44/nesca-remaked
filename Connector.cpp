@@ -9,7 +9,7 @@
 //    unsigned long ipaddr = INADDR_NONE;
 //    DWORD dwRetVal = 0;
 //    char SendData[32] = "Data Buffer";
-//    LPVOID ReplyBuffer = NULL;
+//    LPVOID ReplyBuffer = nullptr;
 //    DWORD ReplySize = 0;
 //
 //    ipaddr = inet_addr(ip);
@@ -29,14 +29,14 @@
 //
 //    ReplySize = sizeof(ICMP_ECHO_REPLY) + sizeof(SendData);
 //    ReplyBuffer = (VOID*) malloc(ReplySize);
-//    if (ReplyBuffer == NULL)
+//    if (ReplyBuffer == nullptr)
 //    {
 //        stt->doEmitionRedFoundData("[Pinger] Unable to allocate memory.");
 //        return 0;
 //    }
 //
 //    dwRetVal = IcmpSendEcho(hIcmpFile, ipaddr, SendData, sizeof(SendData),
-//        NULL, ReplyBuffer, ReplySize, gPingTimeout*1000);
+//        nullptr, ReplyBuffer, ReplySize, gPingTimeout*1000);
 //    if (dwRetVal != 0) {
 //        PICMP_ECHO_REPLY pEchoReply = (PICMP_ECHO_REPLY)ReplyBuffer;
 //        struct in_addr ReplyAddr;
@@ -76,13 +76,13 @@
 //    std::string result;
 //
 //    while(!feof(pipe)) {
-//        if(fgets(buffer, 128, pipe) != NULL){
+//        if(fgets(buffer, 128, pipe) != nullptr){
 //            result += buffer;
 //        }
 //    }
 //    pclose(pipe);
 //
-//    if(strstr((char*)result.c_str(), "100% packet loss") != NULL) return 0;
+//    if(strstr((char*)result.c_str(), "100% packet loss") != nullptr) return 0;
 //    return 1;
 //}
 //#endif
@@ -126,8 +126,8 @@ size_t nWriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 	//size_t realsize = size * nmemb;
 	//mem->memory = (char*)realloc(mem->memory, mem->size + realsize + 1);
 
-	//if (mem->memory == NULL) {
-	//	stt->doEmitionRedFoundData("not enough memory (realloc returned NULL)\n");
+	//if (mem->memory == nullptr) {
+	//	stt->doEmitionRedFoundData("not enough memory (realloc returned nullptr)\n");
 	//	return 0;
 	//}
 
@@ -148,7 +148,7 @@ int pConnect(const char* ip, const int port, std::string *buffer,
 	int res = 0;
 	CURL *curl = curl_easy_init();
 
-	if (curl != NULL)
+	if (curl != nullptr)
 	{
 		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 		if (MapWidgetOpened) {
@@ -177,16 +177,16 @@ int pConnect(const char* ip, const int port, std::string *buffer,
 		curl_easy_setopt(curl, CURLOPT_TIMEOUT, gTimeOut + 3);
 		curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "");
 
-		if (postData != NULL) curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
+		if (postData != nullptr) curl_easy_setopt(curl, CURLOPT_POSTFIELDS, postData);
 
-		if (customHeaders != NULL) {
+		if (customHeaders != nullptr) {
 
-			struct curl_slist *chunk = NULL;
+			struct curl_slist *chunk = nullptr;
 			for (auto &ch : *customHeaders) chunk = curl_slist_append(chunk, ch.c_str());
 			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, chunk);
 		}
 
-		if (lpString != NULL) {
+		if (lpString != nullptr) {
 			curl_easy_setopt(curl, CURLOPT_UNRESTRICTED_AUTH, 1L);
 			curl_easy_setopt(curl, CURLOPT_FTPLISTONLY, 1L);
 			curl_easy_setopt(curl, CURLOPT_USERPWD, lpString->c_str());
@@ -195,7 +195,7 @@ int pConnect(const char* ip, const int port, std::string *buffer,
 				curl_easy_setopt(curl, CURLOPT_HTTPAUTH, (long)CURLAUTH_DIGEST);
 				res = curl_easy_perform(curl);
 
-				if (port != 21 && lpString != NULL) {
+				if (port != 21 && lpString != nullptr) {
 					int pos = Utils::ustrstr(*buffer, "\r\n\r\n");
 					if (pos != -1) {
 						*buffer = buffer->substr(pos + 4);
@@ -280,7 +280,7 @@ int pConnectRTSP(const char* ip, const int port, std::string *buffer, const std:
 	int res = 0;
 	CURL *curl = curl_easy_init();
 
-	if (curl != NULL)
+	if (curl != nullptr)
 	{
 		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 		if (MapWidgetOpened) {
@@ -374,7 +374,7 @@ int Connector::checkIsDigestRTSP(const char *ip, std::string *buffer) {
 	int res = 0;
 	CURL *curl = curl_easy_init();
 
-	if (curl != NULL)
+	if (curl != nullptr)
 	{
 		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 		if (MapWidgetOpened) {
@@ -434,7 +434,7 @@ bool portCheck(const char * sDVRIP, int wDVRPort) {
 //	sa.sin_family = AF_INET;
 //	sa.sin_port = htons(wDVRPort);
 //
-//	hostent *host = NULL;
+//	hostent *host = nullptr;
 //#if defined(WIN32)
 //	if (inet_addr(sDVRIP) != INADDR_NONE) sa.sin_addr.S_un.S_addr = inet_addr(sDVRIP);
 //#else
@@ -499,7 +499,7 @@ bool portCheck(const char * sDVRIP, int wDVRPort) {
 //	return false;
 
 	CURL *curl = curl_easy_init();
-	if (curl != NULL) {
+	if (curl != nullptr) {
 		curl_easy_setopt(curl, CURLOPT_NOSIGNAL, 1L);
 		curl_easy_setopt(curl, CURLOPT_URL, sDVRIP);
 		curl_easy_setopt(curl, CURLOPT_PORT, wDVRPort);

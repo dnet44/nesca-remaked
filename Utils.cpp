@@ -1,5 +1,6 @@
 #include "Utils.h"
 #include <sstream>
+#include <string_view>
 #include "STh.h"
 
 std::string Utils::startDate;
@@ -27,22 +28,19 @@ std::string Utils::currentTarget;
 //}
 
 std::string Utils::getHeaderValue(std::string *buff, const std::string headerValue, const std::string outputName) {
-	if (buff->size() > 0) {
-		int headerSize = headerValue.size();
-		int pos = buff->find(headerValue);
-		if (-1 != pos) {
-			int diff = pos + headerSize;
-			std::string fieldChunk = buff->substr(diff, buff->find("\r\n", pos) - diff);
-			std::string fieldHeader = outputName + fieldChunk.substr(0, fieldChunk.find(";"));
-			return fieldHeader;
-		}
-		else {
-			return "";
+	std::string_view sv(*buff);
+	if (!sv.empty()) {
+		size_t pos = sv.find(headerValue);
+		if (pos != std::string_view::npos) {
+			size_t diff = pos + headerValue.size();
+			size_t endLine = sv.find("\r\n", pos);
+			std::string_view fieldChunk = sv.substr(diff, endLine - diff);
+			size_t semiColon = fieldChunk.find(";");
+			std::string_view finalChunk = fieldChunk.substr(0, semiColon);
+			return outputName + std::string(finalChunk);
 		}
 	}
-	else {
-		return "";
-	}
+	return "";
 }
 void Utils::saveStartDate() {
 	QDate date = QDate::currentDate();
@@ -85,19 +83,29 @@ std::string Utils::getCurrentTarget() {
 }
 
 int Utils::isDigest(const std::string *buffer) {
-	if (Utils::ustrstr(buffer, "401 authorization") != -1
-		|| Utils::ustrstr(buffer, "401 unauthorized") != -1
-		|| (Utils::ustrstr(buffer, "www-authenticate") != -1
-		&& Utils::ustrstr(buffer, "401 ") != -1
+	std::string_view sv(*buffer);
+	auto ustrstr_sv = [](std::string_view s, std::string_view pattern) {
+		auto it = std::search(
+			s.begin(), s.end(),
+			pattern.begin(), pattern.end(),
+			[](char ch1, char ch2) { return std::tolower(ch1) == std::tolower(ch2); }
+		);
+		return it != s.end();
+	};
+
+	if (ustrstr_sv(sv, "401 authorization")
+		|| ustrstr_sv(sv, "401 unauthorized")
+		|| (ustrstr_sv(sv, "www-authenticate")
+		&& ustrstr_sv(sv, "401 ")
 		)
-		|| Utils::ustrstr(buffer, "401 unauthorized access denied") != -1
-		|| Utils::ustrstr(buffer, "401 unauthorised") != -1
-		|| (Utils::ustrstr(buffer, "www-authenticate") != -1
-		&& Utils::ustrstr(buffer, " 401\r\n") != -1
+		|| ustrstr_sv(sv, "401 unauthorized access denied")
+		|| ustrstr_sv(sv, "401 unauthorised")
+		|| (ustrstr_sv(sv, "www-authenticate")
+		&& ustrstr_sv(sv, " 401\r\n")
 		)
 		) {
-		if (Utils::ustrstr(buffer, "digest realm") != -1
-			&& Utils::ustrstr(buffer, "basic realm") == -1) {
+		if (ustrstr_sv(sv, "digest realm")
+			&& !ustrstr_sv(sv, "basic realm")) {
 			return 1;
 		}
 		else return 0;
